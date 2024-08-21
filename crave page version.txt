@@ -1,0 +1,163 @@
+import streamlit as st
+import tensorflow as tf
+import numpy as np
+from PIL import Image
+
+# Load the trained model
+model = tf.keras.models.load_model(r'C:\Users\Kelvi\Desktop\crave\training.py')
+
+# Function to preprocess uploaded image
+def preprocess_image(image):
+    img = Image.open(image)
+    img = img.resize((64, 64))  # Resize image to match model input size
+    img_array = np.array(img)
+    img_array = img_array / 255.0  # Normalize pixel values
+    return img_array
+
+# Function to make predictions
+def predict(image):
+    img_array = preprocess_image(image)
+    img_array = np.expand_dims(img_array, axis=0)  # Add batch dimension
+    predictions = model.predict(img_array)
+    class_index = np.argmax(predictions)
+    return class_index, predictions[0][class_index]
+
+# Streamlit web application
+def main():
+    st.title("Food Recognition")
+
+    # Upload image
+    uploaded_image = st.file_uploader("Upload an image", type=["jpg", "png", "jpeg"])
+
+    if uploaded_image is not None:
+        # Display uploaded image
+        st.image(uploaded_image, caption='Uploaded Image', use_column_width=True)
+
+        # Perform prediction on the uploaded image
+        class_index, confidence = predict(uploaded_image)
+
+        # Display prediction result
+        class_name = training_set.class_names[class_index]
+        st.write(f"Predicted Food: {class_name}")
+        st.write(f"Confidence: {confidence:.2%}")
+
+if __name__ == "__main__":
+    main()
+
+
+
+
+
+
+
+
+
+
+###########################         3/5/2024	10:51         ################################
+
+import streamlit as st
+import tensorflow as tf
+import numpy as np
+from PIL import Image
+
+# Load the trained model
+model = tf.keras.models.load_model(r'C:\Users\Kelvi\Desktop\crave\trained_model.h5')
+
+# Function to preprocess uploaded image
+def preprocess_image(image):
+    img = Image.open(image)
+    img = img.resize((64, 64))  # Resize image to match model input size
+    img_array = np.array(img)
+    img_array = img_array / 255.0  # Normalize pixel values
+    return img_array
+
+# Function to make predictions
+def predict(image):
+    img_array = preprocess_image(image)
+    img_array = np.expand_dims(img_array, axis=0)  # Add batch dimension
+    predictions = model.predict(img_array)
+    class_index = np.argmax(predictions)
+    return class_index, predictions[0][class_index]
+
+# Streamlit web application
+def main():
+    st.title("Food Recognition")
+
+    # Upload image
+    uploaded_image = st.file_uploader("Upload an image", type=["jpg", "png", "jpeg"])
+
+    if uploaded_image is not None:
+        # Display uploaded image
+        st.image(uploaded_image, caption='Uploaded Image', use_column_width=True)
+
+        # Perform prediction on the uploaded image
+        class_index, confidence = predict(uploaded_image)
+
+        # Display prediction result
+        st.write(f"Predicted Food: {class_index}")
+        st.write(f"Confidence: {confidence:.2%}")
+
+if __name__ == "__main__":
+    main()
+
+
+
+
+
+
+
+
+================================================= 3/18/24 ================================================
+import streamlit as st
+import tensorflow as tf
+import numpy as np
+from PIL import Image
+
+#Tensorflow Model Prediction
+def model_prediction(test_image):
+    model = tf.keras.models.load_model("trained_model.h5")
+    image = tf.keras.preprocessing.image.load_img(test_image, target_size=(64,64))
+    input_arr = tf.keras.preprocessing.image.img_to_array(image)
+    input_arr = np.array([input_arr]) #convert single image to batch
+    predictions = model.predict(input_arr)
+    return np.argmax(predictions) #return index of max element
+
+def main():
+    st.title("AI FOOD RECOGNIZE SYSTEM")
+
+    app_mode = st.sidebar.selectbox("Select Page", ["Home", "About Project", "Prediction"])
+
+    if app_mode == "Home":
+        st.header("Introduction")
+        st.image("home_img.png", width=500)
+        
+    elif app_mode == "About Project":
+        st.subheader("About Dataset")
+        st.text("This dataset contains images of the following food items:")
+        st.code("Cuisines- ")
+        st.code("Desserts- ")
+        st.subheader("Content")
+        st.text("This dataset contains three folders:")
+        st.text("1. train (100 images each)")
+        st.text("2. test (10 images each)")
+        st.text("3. validation (10 images each)")
+
+    elif app_mode == "Prediction":
+        st.header("Model Prediction")
+        test_image = st.file_uploader("Choose an Image:")
+        
+        if test_image is not None:
+            if st.button("Show Image"):
+                st.image(test_image, width=4, use_column_width=True)
+
+            if st.button("Predict"):
+                st.success("Our Prediction")
+                result_index = model_prediction(test_image)
+                # Reading Labels
+                with open("labels.txt") as f:
+                    content = f.readlines()
+                label = [i[:-1] for i in content]
+                st.success(f"Model predicts it's a {label[class_index]} with {confidence:.2f}% confidence.")
+
+if __name__ == "__main__":
+    main()
